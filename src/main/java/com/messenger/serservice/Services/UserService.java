@@ -1,0 +1,55 @@
+package com.messenger.serservice.Services;
+
+import com.messenger.serservice.DTO.AccountDTO;
+import com.messenger.serservice.DTO.TokenResponse;
+import com.messenger.serservice.Entity.Account;
+import com.messenger.serservice.Repository.AccountRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Service
+public class UserService {
+    @Autowired
+    private final AccountRepository accountRepository;
+    @Autowired
+    private final JwtService jwtService;
+    @Autowired
+    private final Mapper mapper;
+    @Autowired
+    private final PasswordEncoder passwordEncoder;
+
+
+    public UserService(AccountRepository accountRepository, JwtService jwtService, Mapper mapper, PasswordEncoder passwordEncoder) {
+        this.accountRepository = accountRepository;
+        this.jwtService = jwtService;
+        this.mapper = mapper;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public TokenResponse register(AccountDTO accountDTO) {
+        if (accountRepository.findById(accountDTO.getAccountId()).isPresent()) {
+            return new TokenResponse("Account already exists");
+        }
+
+        Account account = mapper.dtoToEntity(accountDTO);
+        accountRepository.save(account);
+
+        return new TokenResponse(jwtService.generateToken(account));
+
+
+
+    }
+
+
+    public TokenResponse login(AccountDTO accountDTO) {
+        Account account = accountRepository.findById(accountDTO.getAccountId()).orElseThrow(() -> new RuntimeException("Account not found"));
+
+        if (!passwordEncoder.matches(account.getPassword(), account.getPassword())) {
+            throw new RuntimeException("Incorrect password");
+        }
+        return new TokenResponse(jwtService.generateToken(account));
+    }
+
+
+}
