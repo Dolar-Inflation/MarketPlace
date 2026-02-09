@@ -14,8 +14,8 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    private final String SECRET = "super-secret-key-change-in-prod";
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+
+    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     public String generateToken(Account account) {
 

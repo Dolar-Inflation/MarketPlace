@@ -16,7 +16,7 @@ public class UserService {
     private final JwtService jwtService;
     @Autowired
     private final Mapper mapper;
-    @Autowired
+
     private final PasswordEncoder passwordEncoder;
 
 
@@ -24,13 +24,12 @@ public class UserService {
         this.accountRepository = accountRepository;
         this.jwtService = jwtService;
         this.mapper = mapper;
+
         this.passwordEncoder = passwordEncoder;
     }
 
     public TokenResponse register(AccountDTO accountDTO) {
-        if (accountRepository.findById(accountDTO.getAccountId()).isPresent()) {
-            return new TokenResponse("Account already exists");
-        }
+
 
         Account account = mapper.dtoToEntity(accountDTO);
         accountRepository.save(account);
@@ -45,7 +44,8 @@ public class UserService {
     public TokenResponse login(AccountDTO accountDTO) {
         Account account = accountRepository.findById(accountDTO.getAccountId()).orElseThrow(() -> new RuntimeException("Account not found"));
 
-        if (!passwordEncoder.matches(account.getPassword(), account.getPassword())) {
+
+        if (!passwordEncoder.matches(accountDTO.getAccountPassword(), account.getPassword())) {
             throw new RuntimeException("Incorrect password");
         }
         return new TokenResponse(jwtService.generateToken(account));

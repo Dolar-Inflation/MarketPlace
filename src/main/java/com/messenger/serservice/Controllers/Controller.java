@@ -1,6 +1,10 @@
 package com.messenger.serservice.Controllers;
 
+import com.messenger.serservice.DTO.AccountDTO;
+import com.messenger.serservice.DTO.TokenResponse;
 import com.messenger.serservice.Services.UserService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,7 +17,21 @@ public class Controller {
     public Controller(UserService userService) {
         this.userService = userService;
     }
+    @PostMapping("/login")
+    public String login(@RequestBody AccountDTO user) {
 
-    
+        userService.login(user);
+        return "Login successful";
+
+    }
+    @PostMapping("register")
+    public TokenResponse register(@RequestBody AccountDTO user) {
+        return  userService.register(user);
+
+    }
+
+
+
+
 
 }

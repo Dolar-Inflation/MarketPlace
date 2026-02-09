@@ -24,7 +24,7 @@ public class Mapper {
         Account account = new Account();
         account.setAccountname(dto.getAccountName());
         account.setPassword(passwordEncoder.encode(dto.getAccountPassword()));
-        account.setId(dto.getAccountId());
+
         return account;
 
     }
