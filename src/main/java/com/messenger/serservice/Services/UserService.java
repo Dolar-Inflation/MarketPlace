@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
     @Autowired
@@ -42,13 +44,17 @@ public class UserService {
 
 
     public TokenResponse login(AccountDTO accountDTO) {
-        Account account = accountRepository.findById(accountDTO.getAccountId()).orElseThrow(() -> new RuntimeException("Account not found"));
 
 
-        if (!passwordEncoder.matches(accountDTO.getAccountPassword(), account.getPassword())) {
+        Account name = accountRepository.findAccountByAccountname(accountDTO.getAccountName()).orElseThrow(() -> new RuntimeException("Username not found"));
+
+//        Account account = accountRepository.findById(accountDTO.getAccountId()).orElseThrow(() -> new RuntimeException("Account not found"));
+
+
+        if (!passwordEncoder.matches(accountDTO.getAccountPassword(), name.getPassword())) {
             throw new RuntimeException("Incorrect password");
         }
-        return new TokenResponse(jwtService.generateToken(account));
+        return new TokenResponse(jwtService.generateToken(name));
     }
 
 

@@ -18,10 +18,10 @@ public class Controller {
         this.userService = userService;
     }
     @PostMapping("/login")
-    public String login(@RequestBody AccountDTO user) {
+    public TokenResponse login(@RequestBody AccountDTO user) {
 
-        userService.login(user);
-        return "Login successful";
+        return   userService.login(user);
+
 
     }
     @PostMapping("register")
