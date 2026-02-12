@@ -1,32 +1,58 @@
 package com.messenger.serservice.Controllers;
 
 import com.messenger.serservice.DTO.AccountDTO;
+import com.messenger.serservice.DTO.AuthRequest;
 import com.messenger.serservice.DTO.TokenResponse;
 import com.messenger.serservice.Services.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tools.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/auth")
 public class Controller {
 
     private final UserService userService;
+    private final ObjectMapper objectMapper;
 
-    public Controller(UserService userService) {
+    public Controller(UserService userService, ObjectMapper objectMapper) {
         this.userService = userService;
+        this.objectMapper = objectMapper;
     }
     @PostMapping("/login")
-    public TokenResponse login(@RequestBody AccountDTO user) {
+    public TokenResponse login(@RequestBody AuthRequest authRequest) {
 
-        return   userService.login(user);
+        try {
+            String tokenResponse = authRequest.getToken();
+            userService.login(authRequest.getAccount(), String.valueOf(tokenResponse));
+            return new TokenResponse(tokenResponse);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+
+        }
+
 
 
     }
     @PostMapping("register")
-    public TokenResponse register(@RequestBody AccountDTO user) {
-        return  userService.register(user);
+    public TokenResponse register(@RequestBody AuthRequest authRequest) {
+
+
+        try {
+            AccountDTO accountDTO = new AccountDTO();
+            accountDTO = authRequest.getAccount();
+            String tokenResponse = authRequest.getToken();
+
+            userService.register(accountDTO, String.valueOf(tokenResponse));
+
+            return new TokenResponse(tokenResponse);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+
 
     }
 
