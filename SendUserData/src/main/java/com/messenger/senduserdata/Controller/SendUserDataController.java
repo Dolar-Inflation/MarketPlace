@@ -24,16 +24,16 @@ public class SendUserDataController {
     String token = jwtService.generateToken(accountDTO);
 //    tokenResponse.setToken(jwtService.generateToken(accountDTO));
     AuthRequest authRequest = new AuthRequest(accountDTO,token);
+    TokenResponse tokenResponse = restTemplate.postForObject("http://ser-service/auth/register", authRequest, TokenResponse.class);
 
-
-     return restTemplate.postForObject("http://ser-service/auth/register", authRequest, TokenResponse.class);
+     return tokenResponse;
     }
 @PostMapping("/send/login")
     public TokenResponse sendUserDataLogin(@RequestBody AccountDTO accountDTO) {
         String token = jwtService.generateToken(accountDTO);
         AuthRequest authRequest = new AuthRequest(accountDTO,token);
-
-        return restTemplate.postForObject("http://ser-service/auth/login", authRequest, TokenResponse.class);
+        TokenResponse tokenResponse =restTemplate.postForObject("http://ser-service/auth/login", authRequest, TokenResponse.class);
+        return tokenResponse;
     }
 
 }
