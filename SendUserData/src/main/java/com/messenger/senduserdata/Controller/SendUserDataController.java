@@ -4,6 +4,8 @@ import com.messenger.senduserdata.Configuration.TokenResponse;
 import com.messenger.senduserdata.DTO.AccountDTO;
 import com.messenger.senduserdata.DTO.AuthRequest;
 import com.messenger.senduserdata.Services.JwtService;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,9 +24,15 @@ public class SendUserDataController {
 @PostMapping("/send/register")
     public TokenResponse sendUserDataRegister(@RequestBody AccountDTO accountDTO) {
     String token = jwtService.generateToken(accountDTO);
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBearerAuth(token);
+
 //    tokenResponse.setToken(jwtService.generateToken(accountDTO));
     AuthRequest authRequest = new AuthRequest(accountDTO,token);
-    TokenResponse tokenResponse = restTemplate.postForObject("http://ser-service/auth/register", authRequest, TokenResponse.class);
+
+    HttpEntity<AuthRequest> entity = new HttpEntity<>(authRequest, headers);
+
+    TokenResponse tokenResponse = restTemplate.postForObject("http://ser-service/auth/register", entity, TokenResponse.class);
 
      return tokenResponse;
     }

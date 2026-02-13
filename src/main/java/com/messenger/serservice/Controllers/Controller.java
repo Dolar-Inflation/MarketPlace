@@ -4,10 +4,7 @@ import com.messenger.serservice.DTO.AccountDTO;
 import com.messenger.serservice.DTO.AuthRequest;
 import com.messenger.serservice.DTO.TokenResponse;
 import com.messenger.serservice.Services.UserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.ObjectMapper;
 
 @RestController
@@ -37,17 +34,18 @@ public class Controller {
 
     }
     @PostMapping("register")
-    public TokenResponse register(@RequestBody AuthRequest authRequest) {
+    public TokenResponse register(@RequestBody AuthRequest authRequest,@RequestHeader("Authorization") String authHeader) {
 
 
         try {
-            AccountDTO accountDTO = new AccountDTO();
-            accountDTO = authRequest.getAccount();
-            String tokenResponse = authRequest.getToken();
+            String token = authHeader.substring(7);
+            AccountDTO accountDTO = authRequest.getAccount();
 
-            userService.register(accountDTO, String.valueOf(tokenResponse));
 
-            return new TokenResponse(tokenResponse);
+
+            userService.register(accountDTO,token );
+
+            return new TokenResponse(token);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
