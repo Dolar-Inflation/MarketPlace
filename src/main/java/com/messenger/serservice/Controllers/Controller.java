@@ -19,12 +19,13 @@ public class Controller {
         this.objectMapper = objectMapper;
     }
     @PostMapping("/login")
-    public TokenResponse login(@RequestBody AuthRequest authRequest) {
+    public TokenResponse login(@RequestBody AuthRequest authRequest,@RequestHeader("Authorization") String authHeader) {
 
         try {
-            String tokenResponse = authRequest.getToken();
-            userService.login(authRequest.getAccount(), String.valueOf(tokenResponse));
-            return new TokenResponse(tokenResponse);
+            String token = authHeader.substring(7);
+            AccountDTO accountDTO = authRequest.getAccount();
+            userService.login(accountDTO, token);
+            return new TokenResponse(token);
         } catch (Exception e) {
             throw new RuntimeException(e);
 
@@ -44,7 +45,7 @@ public class Controller {
 
 
             userService.register(accountDTO,token );
-
+            System.out.println("тело и заголовок"+ authRequest+token);
             return new TokenResponse(token);
         } catch (Exception e) {
             throw new RuntimeException(e);

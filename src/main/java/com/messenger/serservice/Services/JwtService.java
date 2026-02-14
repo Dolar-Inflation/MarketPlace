@@ -1,7 +1,6 @@
 package com.messenger.serservice.Services;
 
 import com.messenger.serservice.Entity.Account;
-import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -24,17 +23,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-//    public String generateToken(Account account) {
-//
-//        return Jwts.builder()
-//                .setSubject(account.getAccountname())
-//
-//                .setIssuedAt(new Date())
-//                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
-//                .signWith( getSigningKey(),SignatureAlgorithm.HS512)
-//                .compact();
-//
-//    }
+
 
 
     public boolean validateToken(String token) {
