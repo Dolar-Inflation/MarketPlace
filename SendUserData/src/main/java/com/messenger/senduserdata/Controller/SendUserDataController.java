@@ -5,10 +5,8 @@ import com.messenger.senduserdata.DTO.AccountDTO;
 import com.messenger.senduserdata.DTO.AuthRequest;
 import com.messenger.senduserdata.Services.JwtService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -85,4 +83,17 @@ public class SendUserDataController {
             .body(tokenResponse);
     }
 
+    @PostMapping("/send/getapitoken")
+    public ResponseEntity<TokenResponse> sendUserDataGetToken(
+                                                              @CookieValue(name = "access", required = false) String token ) {
+        if (token == null) {
+            log.warn("Cookie 'access' not found for user ");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); }
+
+        TokenResponse tokenResponse = new TokenResponse();
+        tokenResponse.setToken(token);
+        tokenResponse = restTemplate.postForObject("http://ser-service/auth/getapi",tokenResponse, TokenResponse.class);
+        return ResponseEntity.ok(tokenResponse);
+
+    }
 }

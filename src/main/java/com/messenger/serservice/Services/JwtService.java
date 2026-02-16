@@ -5,6 +5,9 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -14,6 +17,8 @@ import java.util.Date;
 
 @Service
 public class JwtService {
+
+    private static final Logger log = LoggerFactory.getLogger(JwtService.class);
 
     private Key getSigningKey(AccountDTO accountDTO) throws NoSuchAlgorithmException {
         String username = accountDTO.getAccountName();
@@ -28,14 +33,18 @@ public class JwtService {
 
 
 
-    public void validateToken(String token, AccountDTO accountDTO) {
+    public boolean validateToken(String token, AccountDTO accountDTO) throws NoSuchAlgorithmException {
         try {
 
 //            Key key= Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
             Jwts.parserBuilder().setSigningKey(getSigningKey(accountDTO)).build().parseClaimsJws(token);
+            return true;
         }
-        catch (JwtException | NoSuchAlgorithmException ignored) {
+        catch (JwtException | NoSuchAlgorithmException e ) {
+            log.warn("{}валидация токена не прошла", e.getMessage());
+            return false;
         }
+
     }
     public String generateToken(AccountDTO account) throws NoSuchAlgorithmException {
 
