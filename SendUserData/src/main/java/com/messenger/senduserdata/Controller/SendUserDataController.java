@@ -28,16 +28,16 @@ public class SendUserDataController {
     }
 @PostMapping("/send/register")
     public ResponseEntity<TokenResponse> sendUserDataRegister(@RequestBody AccountDTO accountDTO) {
-    String token = jwtService.generateToken(accountDTO);
-    HttpHeaders headers = new HttpHeaders();
-    headers.setBearerAuth(token);
+//    String token = jwtService.generateToken(accountDTO);
+//    HttpHeaders headers = new HttpHeaders();
+//    headers.setBearerAuth(token);
 
 //    tokenResponse.setToken(jwtService.generateToken(accountDTO));
-    AuthRequest authRequest = new AuthRequest(accountDTO,token);
+//    AuthRequest authRequest = new AuthRequest(accountDTO,token);
 
-    HttpEntity<AuthRequest> entity = new HttpEntity<>(authRequest, headers);
+//    HttpEntity<AuthRequest> entity = new HttpEntity<>(authRequest, headers);
 
-    TokenResponse tokenResponse = restTemplate.postForObject("http://ser-service/auth/register", entity, TokenResponse.class);
+    TokenResponse tokenResponse = restTemplate.postForObject("http://ser-service/auth/register", accountDTO, TokenResponse.class);
 
     assert tokenResponse != null;
     ResponseCookie cookie = ResponseCookie.from("access", tokenResponse.getToken())
@@ -58,13 +58,13 @@ public class SendUserDataController {
     }
 @PostMapping("/send/login")
     public ResponseEntity<TokenResponse> sendUserDataLogin(@RequestBody AccountDTO accountDTO) {
-        String token = jwtService.generateToken(accountDTO);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
-        AuthRequest authRequest = new AuthRequest(accountDTO,token);
-        HttpEntity<AuthRequest> entity = new HttpEntity<>(authRequest, headers);
+//        String token = jwtService.generateToken(accountDTO);
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setBearerAuth(token);
+//        AuthRequest authRequest = new AuthRequest(accountDTO,token);
+//        HttpEntity<AuthRequest> entity = new HttpEntity<>(authRequest, headers);
 
-        TokenResponse tokenResponse =restTemplate.postForObject("http://ser-service/auth/login", entity, TokenResponse.class);
+        TokenResponse tokenResponse =restTemplate.postForObject("http://ser-service/auth/login", accountDTO, TokenResponse.class);
 
     assert tokenResponse != null;
     ResponseCookie cookie = ResponseCookie.from("access", tokenResponse.getToken())

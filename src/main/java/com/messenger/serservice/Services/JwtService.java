@@ -1,44 +1,57 @@
 package com.messenger.serservice.Services;
 
-import com.messenger.serservice.Entity.Account;
+import com.messenger.serservice.DTO.AccountDTO;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
-//TODO переделать на нормальную валидацию токена
+
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret}")
-    private String secret;
+    private Key getSigningKey(AccountDTO accountDTO) throws NoSuchAlgorithmException {
+        String username = accountDTO.getAccountName();
+
+        byte[] hash = java.security.MessageDigest
+                .getInstance("SHA-512")
+                .digest(username.getBytes(StandardCharsets.UTF_8));
 
 
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(hash);
     }
 
 
 
-
-    public boolean validateToken(String token) {
+    public void validateToken(String token, AccountDTO accountDTO) {
         try {
-            Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
-            return true;
+
+//            Key key= Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+            Jwts.parserBuilder().setSigningKey(getSigningKey(accountDTO)).build().parseClaimsJws(token);
         }
-        catch (JwtException e) {
-            return false;
+        catch (JwtException | NoSuchAlgorithmException ignored) {
         }
     }
+    public String generateToken(AccountDTO account) throws NoSuchAlgorithmException {
 
-    public String ExtractClaim(String token) {
+        return Jwts.builder()
+                .setSubject(account.getAccountName())
+
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
+                .signWith(getSigningKey(account),SignatureAlgorithm.HS512)
+                .compact();
+
+    }
+
+    public String ExtractClaim(String token,AccountDTO accountDTO) throws NoSuchAlgorithmException {
         return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+                .setSigningKey(getSigningKey((AccountDTO) getSigningKey(accountDTO)))
                 .build()
                 .parseClaimsJws(token)
                 .getBody()

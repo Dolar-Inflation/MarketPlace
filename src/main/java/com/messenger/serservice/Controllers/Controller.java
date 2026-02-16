@@ -4,6 +4,7 @@ import com.messenger.serservice.DTO.AccountDTO;
 import com.messenger.serservice.DTO.AuthRequest;
 import com.messenger.serservice.DTO.TokenResponse;
 import com.messenger.serservice.Services.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.ObjectMapper;
 
@@ -12,19 +13,19 @@ import tools.jackson.databind.ObjectMapper;
 public class Controller {
 
     private final UserService userService;
-    private final ObjectMapper objectMapper;
 
-    public Controller(UserService userService, ObjectMapper objectMapper) {
+
+    public Controller(UserService userService) {
         this.userService = userService;
-        this.objectMapper = objectMapper;
+
     }
     @PostMapping("/login")
-    public TokenResponse login(@RequestBody AuthRequest authRequest,@RequestHeader("Authorization") String authHeader) {
+    public TokenResponse login(@RequestBody AccountDTO accountDTO) {
 
         try {
-            String token = authHeader.substring(7);
-            AccountDTO accountDTO = authRequest.getAccount();
-            userService.login(accountDTO, token);
+
+
+           String token = userService.login(accountDTO);
             return new TokenResponse(token);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -35,17 +36,13 @@ public class Controller {
 
     }
     @PostMapping("register")
-    public TokenResponse register(@RequestBody AuthRequest authRequest,@RequestHeader("Authorization") String authHeader) {
+    public TokenResponse register(@RequestBody AccountDTO accountDTO) {
 
 
         try {
-            String token = authHeader.substring(7);
-            AccountDTO accountDTO = authRequest.getAccount();
 
-
-
-            userService.register(accountDTO,token );
-            System.out.println("тело и заголовок"+ authRequest+token);
+           String token = userService.register(accountDTO);
+            System.out.println("тело и заголовок");
             return new TokenResponse(token);
         } catch (Exception e) {
             throw new RuntimeException(e);
