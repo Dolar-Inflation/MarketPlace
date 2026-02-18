@@ -2,6 +2,7 @@ package com.messenger.productlist.Services;
 
 import com.messenger.productlist.DTO.AccountDTO;
 
+import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -51,6 +52,15 @@ public class JwtService {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject(); }
+
+
+    public JwsHeader<?> extractHeader(String token, AccountDTO accountDTO) throws NoSuchAlgorithmException {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey(accountDTO))
+                .build()
+                .parseClaimsJws(token)
+                .getHeader();
+    }
 
 
 }
