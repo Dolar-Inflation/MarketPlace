@@ -3,6 +3,7 @@ package com.messenger.senduserdata.Controller;
 import com.messenger.senduserdata.Configuration.TokenResponse;
 import com.messenger.senduserdata.DTO.AccountDTO;
 import com.messenger.senduserdata.DTO.AuthRequest;
+import com.messenger.senduserdata.DTO.ProductDTO;
 import com.messenger.senduserdata.Services.JwtService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
@@ -96,4 +97,23 @@ public class SendUserDataController {
         return ResponseEntity.ok(tokenResponse);
 
     }
+    //TODO в токене хранится шифровонный логин
+    // отправляем его из куки на стороне он проверяется валидириуется если всё ок приходит в
+    // нужный сервис который расшифровывает логин и по логину добавляет
+    // связб табл пользователя и заказы
+    @PostMapping("/products/makeorder")
+    public ResponseEntity<TokenResponse> sendUserDataMakeOrder(@RequestBody ProductDTO productDTO,@CookieValue(name = "access", required = false) String token) {
+        if (token == null) {
+            log.warn("Cookie 'access' not found for user (products list) ");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }else {
+            TokenResponse tokenResponse = new TokenResponse();
+            tokenResponse.setToken(token);
+            tokenResponse = restTemplate.postForObject("http://ser-service/auth/makeorder",tokenResponse, TokenResponse.class);
+            return ResponseEntity.ok(tokenResponse);
+        }
+
+
+    }
+
 }

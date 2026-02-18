@@ -1,0 +1,14 @@
+package com.messenger.senduserdata.DTO;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class ProductDTO {
+
+    private String productName;
+
+    private double price;
+
+}
