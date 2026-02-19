@@ -3,7 +3,12 @@ package com.messenger.productlist.Services;
 import com.messenger.productlist.DTO.AccountDTO;
 import com.messenger.productlist.DTO.ProductDTO;
 import com.messenger.productlist.Entity.serservice.Account;
+import com.messenger.productlist.Entity.serservice.Order;
+import com.messenger.productlist.Entity.serservice.OrderProduct;
 import com.messenger.productlist.Entity.serservice.Product;
+import com.messenger.productlist.Reposytories.AccountRepo;
+import com.messenger.productlist.Reposytories.OrderProductRepository;
+import com.messenger.productlist.Reposytories.OrderRepository;
 import com.messenger.productlist.Reposytories.ProductsRepository;
 import org.apache.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -22,12 +27,19 @@ public class ProductListService {
     private final EntityToDto entityToDto;
     private final ProductsRepository productsRepository;
     private final JwtService jwtService;
+    private final AccountRepo accountRepo;
+    private final OrderRepository orderRepository;
+    private final OrderProductRepository orderProductRepository;
 
 
-    public ProductListService(EntityToDto entityToDto, ProductsRepository productsRepository, JwtService jwtService) {
+    public ProductListService(EntityToDto entityToDto, ProductsRepository productsRepository, JwtService jwtService, AccountRepo accountRepo, OrderRepository orderRepository, OrderProductRepository orderProductRepository) {
         this.entityToDto = entityToDto;
         this.productsRepository = productsRepository;
         this.jwtService = jwtService;
+        this.accountRepo = accountRepo;
+        this.orderRepository = orderRepository;
+
+        this.orderProductRepository = orderProductRepository;
     }
 
 
@@ -50,25 +62,25 @@ public class ProductListService {
 
 
     public void OrderProduct(ProductDTO productDTO,AccountDTO accountDTO,String token) throws NoSuchAlgorithmException {
-        jwtService.validateToken(token,accountDTO);
+
         Account account = new Account();
-        account.setAccountname(jwtService.extractHeader(token,accountDTO).toString());
+        account.setAccountname(accountDTO.getAccountName());
         Long productId = productsRepository.findIdByProductName(productDTO.getProductName());
         if (productId!=null) {
             Product product = productsRepository.findById(productId).get();
 
+            Order order = new Order();
+            order.setProductId(productId);
+            order.setAccId(accountRepo.findIdByAccountname(account.getAccountname()).getId());
+            orderRepository.save(order);
 
 
+            OrderProduct orderProduct = new OrderProduct();
+            orderProduct.setProduct(product);
+            orderProduct.setOrder(order);
+            orderProductRepository.save(orderProduct);
 
         }
-        else throw new IllegalArgumentException("Product id is not exist");
-
-
-
-
-
-
-
-    }
+        else throw new IllegalArgumentException("Product id is not exist");}
 
 }
