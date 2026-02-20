@@ -9,7 +9,7 @@ public class EntityToDto {
 
     public ProductDTO toDto(Product product) {
         ProductDTO productDTO = new ProductDTO();
-        productDTO.setProductName(productDTO.getProductName());
+        productDTO.setProductName(product.getProductName());
         productDTO.setPrice(product.getPrice());
         return productDTO;
     }

@@ -60,11 +60,14 @@ public class JwtService {
 
     public String ExtractClaim(String token,AccountDTO accountDTO) throws NoSuchAlgorithmException {
         return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey((AccountDTO) getSigningKey(accountDTO)))
+                .setSigningKey(getSigningKey(accountDTO))
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject(); }
+
+
+
 
 
 }

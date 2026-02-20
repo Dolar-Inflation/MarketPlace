@@ -59,6 +59,8 @@ public class Controller {
     @PostMapping("validate")
     public TokenResponse validate(@RequestBody AuthRequest request) throws NoSuchAlgorithmException {
         AccountDTO accountDTO = request.getAccount();
+        accountDTO.setAccountName(accountDTO.getAccountName());
+
         String token = request.getToken();
        if (jwtService.validateToken(token, accountDTO)){
 

@@ -13,6 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Slf4j
 @RestController
 public class SendUserDataController {
@@ -122,17 +127,18 @@ public class SendUserDataController {
             restTemplate.postForObject(
                     "http://PRODUCTLIST/makeorder",
                     makeOrderDTO,
-                    Void.class
+                    String.class
             );
 
 
             return ResponseEntity.ok(tokenResponse);
         }
 
+    }
+    @PostMapping("productlist")
+    public List<ProductDTO> getProductList(){
 
-
-
+        return restTemplate.getForObject("http://PRODUCTLIST/productlist", List.class);
 
     }
-
 }
